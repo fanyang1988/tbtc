@@ -257,14 +257,25 @@ contract Deposit is DepositFactoryAuthority {
         );
     }
 
-    /// @notice     Anyone may notify the contract that the signers have failed to produce a signature.
-    /// @dev        This is considered fraud, and is punished.
-    function notifySignatureTimeout() public {
-        self.notifySignatureTimeout();
+    /// @notice Anyone may notify the contract that the signers have failed to
+    ///         produce a signature for a redemption request in the allotted
+    ///         time.
+    /// @dev This is considered fraud, and is punished by signer bond seizure.
+    ///      Emits a LiquidationStarted event and a Liquidated event and sends
+    ///      the full signer bond to the redeemer. Reverts if the deposit is not
+    ///      currently awaiting a signature or if the allotted time has not yet
+    ///      elapsed.
+    function notifyRedemptionSignatureTimedOut() public {
+        self.notifyRedemptionSignatureTimedOut();
     }
 
-    /// @notice     Anyone may notify the contract that the signers have failed to produce a redemption proof.
-    /// @dev        This is considered fraud, and is punished.
+    /// @notice Anyone may notify the contract that the deposit has failed to
+    ///         receive a redemption proof in the allotted time.
+    /// @dev This is considered fraud, and is punished by signer bond seizure.
+    ///      Emits a LiquidationStarted event and a Liquidated event and sends
+    ///      the full signer bond to the redeemer. Reverts if the deposit is not
+    ///      currently awaiting a signature or if the allotted time has not yet
+    ///      elapsed.
     function notifyRedemptionProofTimeout() public {
         self.notifyRedemptionProofTimeout();
     }
@@ -273,14 +284,22 @@ contract Deposit is DepositFactoryAuthority {
     // FUNDING FLOW
     //
 
-    /// @notice     Anyone may notify the contract that signing group setup has timed out.
-    function notifySignerSetupFailure() public {
-        self.notifySignerSetupFailure();
+    /// @notice Anyone may notify the contract that signing group setup has
+    ///         timed out if retrieveSignerPubkey is not successfully called
+    ///         within the allotted time.
+    /// @dev The public key is stored as 2 bytestrings, X and Y. Emits a
+    ///      RegisteredPubkey event with the two components. Reverts if the
+    ///      deposit is not awaiting signer setup, if the generated public key
+    ///      is unset or has incorrect length, or if the public key has a 0
+    ///      X or Y value.
+    function notifySignerSetupFailed() public {
+        self.notifySignerSetupFailed();
     }
 
-    /// @notice             Poll the Keep contract to retrieve our pubkey.
+    /// @notice Anyone may notify the contract that the ECDSA keep has generated
+    ///         a public key so the deposit contract can pull it in.
     /// @dev                Store the pubkey as 2 bytestrings, X and Y.
-    function retrieveSignerPubkey() public {
+    function notifySignerPubkeyGenerated() public {
         self.retrieveSignerPubkey();
     }
 

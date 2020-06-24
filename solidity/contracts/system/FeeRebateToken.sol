@@ -4,7 +4,7 @@ import "openzeppelin-solidity/contracts/token/ERC721/ERC721Metadata.sol";
 import "./VendingMachineAuthority.sol";
 
 /// @title  Fee Rebate Token
-/// @notice The Fee Rebate Token (FRT) is a non fungible token (ERC721)
+/// @notice The tBTC Fee Rebate Token (FRT) is a non fungible token (ERC721)
 ///         the ID of which corresponds to a given deposit address.
 ///         If the corresponding deposit is still active, ownership of this token
 ///         could result in reimbursement of the signer fee paid to open the deposit.
@@ -16,7 +16,7 @@ import "./VendingMachineAuthority.sol";
 contract FeeRebateToken is ERC721Metadata, VendingMachineAuthority {
 
     constructor(address _vendingMachine)
-        ERC721Metadata("Fee Rebate Token", "FRT")
+        ERC721Metadata("tBTC Fee Rebate Token", "FRT")
         VendingMachineAuthority(_vendingMachine)
     public {
         // solium-disable-previous-line no-empty-blocks
