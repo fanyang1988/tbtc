@@ -276,8 +276,8 @@ contract Deposit is DepositFactoryAuthority {
     ///      the full signer bond to the redeemer. Reverts if the deposit is not
     ///      currently awaiting a signature or if the allotted time has not yet
     ///      elapsed.
-    function notifyRedemptionProofTimeout() public {
-        self.notifyRedemptionProofTimeout();
+    function notifyRedemptionProofTimedOut() public {
+        self.notifyRedemptionProofTimedOut();
     }
 
     //
@@ -287,7 +287,7 @@ contract Deposit is DepositFactoryAuthority {
     /// @notice Anyone may notify the contract that signing group setup has
     ///         timed out if retrieveSignerPubkey is not successfully called
     ///         within the allotted time.
-    /// @dev The public key is stored as 2 bytestrings, X and Y. Emits a
+    /// @dev This
     ///      RegisteredPubkey event with the two components. Reverts if the
     ///      deposit is not awaiting signer setup, if the generated public key
     ///      is unset or has incorrect length, or if the public key has a 0
@@ -298,15 +298,28 @@ contract Deposit is DepositFactoryAuthority {
 
     /// @notice Anyone may notify the contract that the ECDSA keep has generated
     ///         a public key so the deposit contract can pull it in.
-    /// @dev                Store the pubkey as 2 bytestrings, X and Y.
+    /// @dev Stores the pubkey as 2 bytestrings, X and Y. Emits a
+    ///      RegisteredPubkey event with the two components. Reverts if the
+    ///      deposit is not awaiting signer setup, if the generated public key
+    ///      is unset or has incorrect length, or if the public key has a 0
+    ///      X or Y value.
     function notifySignerPubkeyGenerated() public {
         self.retrieveSignerPubkey();
     }
 
-    /// @notice     Anyone may notify the contract that the funder has failed to send BTC.
-    /// @dev        This is considered a funder fault, and we revoke their bond.
-    function notifyFundingTimeout() public {
-        self.notifyFundingTimeout();
+    /// @notice Anyone may notify the contract that the funding phase of the
+    ///         deposit has timed out if provideBTCFundingProof is not
+    ///         successfully called within the allotted time. Any sent BTC is
+    ///         left under control of the signer group, and the funder can
+    ///         use `requestFunderAbort` to request an at-signer-discretion
+    ///         return of any BTC sent to a deposit that has been notified of
+    ///         a funding timeout.
+    /// @dev This is considered a funder fault, and the funder's payment for
+    ///      opening the deposit is not refunded. Emits a SetupFailed event.
+    ///      Reverts if the funding timeout has not yet elapsed, or if the
+    ///      deposit is not currently awaiting funding proof.
+    function notifyFundingTimedOut() public {
+        self.notifyFundingTimedOut();
     }
 
     /// @notice Requests a funder abort for a failed-funding deposit; that is,
